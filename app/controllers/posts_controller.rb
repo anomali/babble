@@ -1,7 +1,7 @@
 class ::Babble::PostsController < ::ApplicationController
   requires_plugin Babble::BABBLE_PLUGIN_NAME
   include ::Babble::Controller
-  before_filter :ensure_logged_in, except: :index
+  before_action :ensure_logged_in, except: :index
 
   def index
     perform_fetch do
@@ -71,9 +71,11 @@ class ::Babble::PostsController < ::ApplicationController
   end
 
   def created_callback(post)
-    RestClient.post(SiteSetting.babble_remote_url, {
-      current_user: current_user.username,
-      message: post.cooked
-    }) if SiteSetting.babble_remote_post && !params[:skip_callback]
+    if SiteSetting.babble_remote_post && !params[:skip_callback]
+      Excon.post(SiteSetting.babble_remote_url,
+        body: { current_user: current_user.username, message: post.cooked }.to_json,
+        headers: { 'Content-Type' => 'application/json', 'Accept' => 'applicaton/json' }
+      )
+    end
   end
 end
