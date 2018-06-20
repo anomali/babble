@@ -27,11 +27,11 @@ $default-chat-width: 300px;
   transition: width ease-in-out 0.25s;
   max-width: 100%;
   background: $secondary;
-  height: calc(100% - 64px);
+  height: calc(100% - 75px);
   position: fixed;
   z-index: 50;
   bottom: 0;
-  margin-top: 64px;
+  margin-top: 75px;
   box-shadow: 0 2px 2px $primary;
   &.expanded { width: 100% !important; }
   &.mobile {
