@@ -1,8 +1,7 @@
-pl:
+pl_PL:
   js:
     babble:
-      position_left: Po lewej
-      position_right: Po prawej
+      placeholder: "tutaj wpisz swoją wiadomość..."
       send: "Wyślij"
       save: "Zapisz"
       cancel: "Anuluj"
@@ -23,7 +22,6 @@ pl:
       loading_messages: "Ładowanie wiadomości..."
       no_more_messages: "To wszystko!"
       logged_out: "Nie jesteś zalogowany! Zaloguj się lub stwórz konto aby wziąć udział w dyskusji."
-      go_to_chat: "Otwórz w pełnym ekranie"
       admin:
         disabled: "Wtyczka Babble została wyłączona. Włącz ją ponownie aby kontynuować."
         new: "Nowy kanał"

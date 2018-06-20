@@ -1,6 +1,6 @@
 # name: babble
 # about: Shoutbox plugin for Discourse
-# version: 2.0.4
+# version: 3.1.13
 # authors: James Kiesel (gdpelican)
 # url: https://github.com/gdpelican/babble
 
@@ -11,6 +11,8 @@ enabled_site_setting :babble_enabled
 def babble_require(path)
   require Rails.root.join('plugins', 'babble', 'app', path).to_s
 end
+
+babble_require 'extras/position_options'
 
 after_initialize do
 
@@ -41,14 +43,21 @@ after_initialize do
   babble_require 'models/user_action'
   babble_require 'models/user_summary'
 
+  babble_require 'jobs/scheduled/babble_prune_history'
+
   Category.register_custom_field_type('chat_topic_id', :integer)
   add_to_serializer(:basic_category, :chat_topic_id) { object.custom_fields['chat_topic_id'] unless object.custom_fields['chat_topic_id'].to_i == 0 }
-  add_to_serializer(:basic_topic, :category_id)      { object.category_id }
+  add_to_serializer(:basic_topic, :category_id)      { object.category_id if object.respond_to?(:category_id) }
 
-  # NB: We're migrating from a category to an archetype to track chats
-  if old_chat_category = Category.find_by(name: SiteSetting.babble_category_name)
-    Topic.where(category_id: old_chat_category.id).update_all(archetype: :chat, category_id: nil)
-    old_chat_category.destroy
+  on :post_created do |post, opts, user|
+    if post.topic.archetype == Archetype.chat
+      post.trigger_post_process(true)
+      TopicUser.update_last_read(user, post.topic.id, post.post_number, post.post_number, PostTiming::MAX_READ_TIME_PER_BATCH)
+      PostAlerter.post_created(post)
+
+      Babble::Broadcaster.publish_to_posts(post, user)
+      Babble::Broadcaster.publish_to_topic(post.topic, user)
+    end
   end
 
   class ::Topic

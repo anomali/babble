@@ -1,9 +1,12 @@
 en:
   js:
     babble:
-      placeholder: "type your chat message here..."
+      position_left: Left
+      position_right: Right
+      placeholder: "Say something..."
       send: "Send"
       save: "Save"
+      flagged: "Flagged"
       cancel: "Cancel"
       title: "open a chat window for a quick conversation"
       error_message: "Please enter a message!"
